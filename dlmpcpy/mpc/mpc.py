@@ -10,7 +10,8 @@ class MPC(Base):
         system            = None,   
         simulation_time   = None,
         time_horizon      = None,
-        initial_condition = None, 
+        initial_condition = None,
+        weigth            = None
     ):
         super().__init__()
         self.setName('MPC')
@@ -19,6 +20,7 @@ class MPC(Base):
         self.setSimulationTime(simulation_time)
         self.setFIR_Horizon(time_horizon)
         self.setInitialCondition(initial_condition)
+        self.setOptimizationWeights(weight)
 
         self._x = []
         self._u = []
@@ -40,6 +42,9 @@ class MPC(Base):
 
     def setInitialCondition(self, initial_condition):
         self._init_x = initial_condition
+
+    def setOptimizationWeight(self, weight):
+        self._Q = weight
  
     def run(self):
         

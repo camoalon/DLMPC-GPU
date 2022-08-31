@@ -1,15 +1,15 @@
 import numpy as np
 
 Nx         = 8
+Nu         = 8
 Tsim      = 10
 T          = 5
+Q          = np.identity(Nx*T+Nu*(T-1))
 x0         = np.array([[0.01200021], [0.41435228], [0.51271307], [0.18309696], [0.17909441], [0.3369922 ], [0.49142641], [0.47657257]]) #np.random.rand(Nx,1)
 locality_d = 2
 
 # --- PLANT DEFINITION --- #
 def generate_plant(Nx):
-
-    Nu = Nx
 
     A = np.zeros((Nx,Nx))
     j = 0
@@ -55,12 +55,13 @@ def get_system_parameters(Nx,locality_d):
     return system_parameters
 
 # --- MPC PARAMETERS --- #
-def get_mpc_parameters(Tsim,T,x0):
+def get_mpc_parameters(Tsim,T,x0,Q):
 
     mpc_parameters = {
                     'simulation_time'   : Tsim,
                     'time_horizon'      : T,
-                    'initial_condition' : x0
+                    'initial_condition' : x0,
+                    'weight'            : Q
                     }
                     
     return mpc_parameters

@@ -31,7 +31,7 @@ if __name__ == '__main__':
     elif mpc_class == "SLSpy":
         mpc = SLSpy
 
-    mpc_parameters = get_mpc_parameters(Tsim,T,x0)
+    mpc_parameters = get_mpc_parameters(Tsim,T,x0,Q)
     dlmpc = mpc(system = system, **mpc_parameters)
 
     # ----- ADMM parameter definition
