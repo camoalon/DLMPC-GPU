@@ -5,8 +5,9 @@ from slspy import *
 class System (LTI_System):
 
     def __init__(self, 
-                A = None,
-                B2 = None,
+                A     = None,
+                AComm = None, # Alternate communication structure
+                B2    = None,
                 locality_d = None,
                 upper_bound_x = None,
                 lower_bound_x = None,
@@ -16,14 +17,16 @@ class System (LTI_System):
 
         LTI_System.__init__(self, **kwargs)
 
-        self._A = A
-        self._B2 = B2 
+        self._A     = A
+        self._AComm = AComm
+        self._B2    = B2 
         self._state_upper_bound = upper_bound_x
         self._state_lower_bound = lower_bound_x
         self._input_upper_bound = upper_bound_u
         self._input_lower_bound = lower_bound_u
 
         self.getLocality(locality_d)
+
 
     def getLocality(self,locality_d):
             
@@ -36,6 +39,7 @@ class System (LTI_System):
         else:
             self._locality_d = locality_d 
 
+
     def getLocalityRegion(self):
 
         if self._locality_Phix is not None:
@@ -47,16 +51,23 @@ class System (LTI_System):
         B  = self._B2
         d  = self._locality_d
  
-        Aux = np.identity(Nx)
+        Aux       = np.identity(Nx)
         A_support = np.zeros((Nx,Nx))
+        
+        commMtx = A
+        if self._AComm is not None:
+            commMtx = self._AComm # Use different matrix to determine communications
+        
         for i in range(Nx):
-            A_support[i] = [int(x) for x in A[i]!=0]
- 
+            A_support[i] = [int(x) for x in commMtx[i]!=0]
+        
         for i in range(d-1):
             Aux = np.matmul(A_support,Aux)
+           
         self._locality_Phix = Aux!=0
         self._locality_Phiu = np.matmul(np.transpose(B),Aux)!=0
         
+
     def getColumnPatches(self,T):
         # For shoter notation
         Nx = self._Nx
@@ -93,6 +104,7 @@ class System (LTI_System):
         column_patch = np.array(column_patch,dtype=object)
 
         return column_patch, max_rows
+
 
     def getRowPatches(self,T):
         # For shoter notation

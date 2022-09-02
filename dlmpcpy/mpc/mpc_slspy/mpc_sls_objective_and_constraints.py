@@ -104,6 +104,7 @@ class MPC_SLS_Locality (SLS_Constraint):
         system = None,
         locality_d = 2
     ):
+        # TODO: This is redundant from system.py's getLocalityRegion
         # compute the supports
         Nx = system._Nx
         Nu = system._Nu
@@ -111,17 +112,24 @@ class MPC_SLS_Locality (SLS_Constraint):
         B = system._B2
         d = locality_d
 
-        Aux = np.identity(Nx)
+        Aux       = np.identity(Nx)
         A_support = np.zeros((Nx,Nx))
+        
+        commMtx = A
+        if system._AComm is not None:
+            commMtx = system._AComm # Use different matrix to determine communications
+            
         for i in range(Nx):
-            A_support[i] = [int(x) for x in A[i]!=0]
+            A_support[i] = [int(x) for x in commMtx[i]!=0]
 
         for i in range(d-1):
             Aux = np.matmul(A_support,Aux)
+
         locality_Phix = Aux!=0
         locality_Phiu = np.matmul(np.transpose(B),Aux)!=0
 
         # isn't the above equivalent to something simpler as follows?
+        # (but taking powers of A_supp makes it tricky)
         #self._support_x = (system._A != 0)
         #self._support_u = ...
 
