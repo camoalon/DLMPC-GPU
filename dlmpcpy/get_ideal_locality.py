@@ -1,13 +1,13 @@
 import numpy as np
 
-def get_ideal_locality(sys, T):
+def get_ideal_locality(sys, T, eps=1e-8):
     x0        = np.ones([sys._Nx, 1]) # Values don't matter as along as all nonzero
     nPhi      = sys._Nx*T + sys._Nu*(T-1)
     (IO, ZAB) = sys.getFeasibilityConstraints(T)
     h         = np.reshape(IO.T, [IO.size, 1])
 
-    maxLoc = sys._Nx
-    for locality in range(1, maxLoc+1): # locality=1 means no neighbors
+    Nx = sys._Nx
+    for locality in range(2, Nx+1): # locality=1 means no neighbors
         print(f'Checking locality size {locality}')
         sys._locality_d    = locality
         sys._locality_Phix = None
@@ -48,8 +48,8 @@ def get_ideal_locality(sys, T):
             xi   = x0[i] * np.eye(nPhi)
             mtx  = np.concatenate((mtx, xi[Nx:, myIdx] @ IHHi), axis=1)
 
-        rankRatio = np.linalg.matrix_rank(mtx) / sys._Nu*(T-1)
-        print(f'\tRank ratio: {rankRatio:.2f')    
+        rankRatio = np.linalg.matrix_rank(mtx) / sys._Nu / (T-1)
+        print(f'\tRank ratio: {rankRatio:.2f}')    
         if rankRatio == 1:
             break
     
