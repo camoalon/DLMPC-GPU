@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from scipy.io import loadmat
 from mpc.system import System
@@ -11,6 +12,7 @@ sysParams = {k : data[k] for k in ('A','B2','Nx', 'Nu', 'AComm') if k in data}
 sys       = System(**sysParams)
 T         = 10
 
-# TODO: can speed up by using mldivide, sparse matrices, zero-col trimming
+t1  = time.perf_counter()
 loc = get_ideal_locality(sys, T)
-
+t2  = time.perf_counter()
+print(f'Time elapsed: {t2-t1:.2f} sec')
