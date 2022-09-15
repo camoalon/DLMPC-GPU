@@ -24,20 +24,13 @@ class System (LTI_System):
         self._state_lower_bound = lower_bound_x
         self._input_upper_bound = upper_bound_u
         self._input_lower_bound = lower_bound_u
+        self.setLocality(locality_d)
 
-        self.getLocality(locality_d)
 
-
-    def getLocality(self,locality_d):
-            
+    def setLocality(self, locality_d):     
         self._locality_Phix = None
         self._locality_Phiu = None
-
-        if locality_d is None:
-            # DO FUNCTION TO COMPUTE LOCALITY
-            pass
-        else:
-            self._locality_d = locality_d 
+        self._locality_d = locality_d
 
 
     def getLocalityRegion(self):
