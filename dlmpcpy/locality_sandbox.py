@@ -1,20 +1,30 @@
-import time
+import sys
 import numpy as np
 from scipy.io import loadmat
 from mpc.system import System
 from mpc.get_ideal_locality import get_ideal_locality
 
 # Load and create system from matlab data
-testFile = '/home/lisa/Downloads/sandbox.mat'
+testFile = sys.argv[1]
 data     = loadmat(testFile, squeeze_me=True)
 
-sysParams = {k : data[k] for k in ('A','B2','Nx', 'Nu', 'AComm') if k in data}
-sys       = System(**sysParams)
-T         = 10
+numSims = len(data['As'])
+systems = [None] * numSims
 
-t1  = time.perf_counter()
-loc = get_ideal_locality(sys, T)
-t2  = time.perf_counter()
-print(f'Time elapsed: {t2-t1:.2f} sec')
+# Load systems
+for i in range(numSims):
+    sysParams = {'A'     : data['As'][i],
+                 'B2'    : data['B2s'][i],
+                 'AComm' : data['AComms'][i],
+                 'Nx'    : data['Nx'],
+                 'Nu'    : data['Nu']
+                }
+    systems[i] = System(**sysParams)
 
-sys.setLocality(loc)
+# Get locality values
+T = 15
+for i in range(numSims):
+    print(f'Sim {i+1} of {numSims}')
+    loc = get_ideal_locality(systems[i], T)
+    print(f'Locality: {loc}')
+    systems[i].setLocality(loc)
