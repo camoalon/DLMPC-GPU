@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.linalg
 import pyopencl as cl
 
 '''
@@ -124,10 +125,12 @@ def precomp_col_cpu_fixD(self): # Fills in col_matrix and col_vector in mpc_para
 
         n[column] = len(rows) # local dimension
 
-        M = IZA_ZB[:,rows] # FIXME: right now we are keeping the rows that are all zeros, we might want to remove that in the future
-        b = E[:,column]
+        M1   = IZA_ZB[:,rows]
+        keep = np.unique(np.nonzero(M1)[0]) # rows with at least one nonzero
+        M    = M1[keep, :]
+        b    = E[keep, column]
 
-        M_aux = np.matmul(M.T,np.linalg.pinv(np.matmul(M,M.T)))
+        M_aux = np.matmul(M.T,scipy.linalg.pinv(np.matmul(M,M.T)))
 
         aux_mat = np.zeros((D,D))
         aux_mat[0:n[column],0:n[column]] = np.matmul(M_aux,M)
