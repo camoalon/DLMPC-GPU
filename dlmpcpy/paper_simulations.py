@@ -2,9 +2,11 @@ import sys
 import pickle
 import numpy as np
 from scipy.io import loadmat
-from mpc import *
+from mpc.system import System
+from mpc.get_ideal_locality import get_ideal_locality
+from mpc.mpc_admm.admm import ADMM_GPU
 
-# Expected usage: locality_sandbox.py <.mat file> <.pkl file with outputs>
+# Expected usage: paper_simulations.py <.mat file> <.pkl file with outputs>
 inputFileName  = sys.argv[1]
 outputFileName = sys.argv[2]
 
@@ -13,6 +15,8 @@ numSims   = len(data['As'])
 
 upper_bound_x = 20
 lower_bound_x = -upper_bound_x
+
+# TODO: not implemented (?)
 upper_bound_u = 5
 lower_bound_u = -upper_bound_u
 
@@ -52,8 +56,8 @@ for i in range(numSims):
     
     # Compute locality that preserves performance
     # TODO: this is a hack to save time (if we already know the result of get_ideal_locality)
-    #loc                                = get_ideal_locality(system, T)
-    #system_parameters[i]['locality_d'] = loc # So we have a record of it
+    # loc                                = get_ideal_locality(system, T)
+    # system_parameters[i]['locality_d'] = loc # So we have a record of it
     loc = 2
     system.setLocality(loc)
 
@@ -63,9 +67,7 @@ for i in range(numSims):
                          'initial_condition' : x0
                         }
     
-    # TODO: double-check that this is the right one; is 'mpc' used?
-    mpc   = ADMM_GPU
-    dlmpc = mpc(system = system, **mpc_parameters[i])
+    dlmpc = ADMM_GPU(system = system, **mpc_parameters[i])
     dlmpc.setParameters(**admm_parameters)
     
     xs[i], us[i] = dlmpc.run()
