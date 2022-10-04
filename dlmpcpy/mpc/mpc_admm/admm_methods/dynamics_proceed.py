@@ -40,7 +40,10 @@ def dynamics_from_psi(self):
 
 def dynamics_from_phi(self):
     # Compute the dynamics (x,u) given the vector phi
-    # For shorter notation    
+    # For shorter notation
+
+    self._phi = self._psi # For use with CPU-precomputation
+    
     dimension = (self._Nx_T_and_Nu_T_minus_1)
 
     # Recover the matrix
@@ -52,6 +55,7 @@ def dynamics_from_phi(self):
     x = []
     base = self._sys._Nx*self._D_row
     for columns in self._row_patch[self._sys._Nx:2*self._sys._Nx]:
+        columns = np.array(columns, dtype='uint32')
         x.append(np.matmul(phi_row[range(base,base+len(columns))],self._x0[columns]))
         base += self._D_row
     x = np.array(x)
@@ -59,6 +63,8 @@ def dynamics_from_phi(self):
     u = []
     base = self._Nx_times_T*self._D_row
     for columns in self._row_patch[self._Nx_times_T:self._Nx_times_T+self._sys._Nu]:
+        columns = np.array(columns, dtype='uint32')
+
         u.append(np.matmul(phi_row[range(base,base+len(columns))],self._x0[columns]))
         base += self._D_row
     u = np.array(u)

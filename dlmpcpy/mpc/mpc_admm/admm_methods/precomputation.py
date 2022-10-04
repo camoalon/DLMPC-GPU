@@ -23,7 +23,7 @@ def precomp_row_gpu(self): # Fills in row_matrix, row_vector and row_scalar in m
     row_patch = self._row_patch # ---- NEED TO CHANGE THIS TO BE OF MAX D LENGTH
     # Computations for maximum length D
     for row in range(DIM):
-        columns = row_patch[row] 
+        columns = np.array(row_patch[row], dtype='uint32')
         if len(columns)<D :
             xi[row] = np.concatenate((self._x0[columns],np.vstack([0]*(D-len(columns)))),axis=0) # local initial condition
         else :
@@ -78,7 +78,7 @@ def precomp_row_cpu_fixD(self): # Fills in row_matrix, row_vector and row_scalar
     const_scalar = [np.zeros(1)] * self._Nx_T_and_Nu_T_minus_1
 
     for row in range(self._Nx_T_and_Nu_T_minus_1):
-        columns = self._row_patch[row] # column patch
+        columns = np.array(self._row_patch[row], dtype='uint32') # column patch
 
         n[row] = len(columns) # local dimension
         xi[row] = x0[columns].reshape(-1,1) # local initial condition
@@ -121,7 +121,7 @@ def precomp_col_cpu_fixD(self): # Fills in col_matrix and col_vector in mpc_para
     const_vector = [np.zeros(D)] * (Nx)
 
     for column in range(Nx):
-        rows = self._column_patch[column] # row patch
+        rows = np.array(self._column_patch[column], dtype='uint32') # row patch
 
         n[column] = len(rows) # local dimension
 

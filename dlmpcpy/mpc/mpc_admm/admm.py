@@ -175,8 +175,8 @@ class ADMM_GPU(ADMM):
         init_vectors(self)
 
     def precompute(self):
-        #precomp_row_cpu_fixD(self) # Precompute rows before MPC iteration (run with fixed D and in CPU)
-        precomp_row_gpu(self)
+        precomp_row_cpu_fixD(self) # Precompute rows before MPC iteration (run with fixed D and in CPU)
+        #precomp_row_gpu(self)
 
     def preallocateGPU_Memory(self):
         preallocating_gpumemory_fixD_with_patches(self)
@@ -185,7 +185,8 @@ class ADMM_GPU(ADMM):
         comp_row_col_lag_conv(self)  # This already includes Psi, Lambda and Convergence updates
  
     def computeDynamics(self):
-        return dynamics_from_psi(self)
+        #return dynamics_from_psi(self)
+        return dynamics_from_phi(self) # If we use CPU-precomp instead of GPU-precomp
 
 class ADMM_GPU_combinedkernels(ADMM):
     '''

@@ -78,7 +78,7 @@ def row_col_transformation_with_patches(self): # Fills in col2row and row2col in
     base = 0
     for i in range(self._Nx_T_and_Nu_T_minus_1):
         base_next = base + D_row
-        columns = self._row_patch[i]
+        columns = np.array(self._row_patch[i], dtype='uint32')
 
         fill_dummy_index = 0
         while fill_dummy_index in columns:
@@ -97,7 +97,7 @@ def row_col_transformation_with_patches(self): # Fills in col2row and row2col in
     base = 0
     for j in range(Nx):
         base_next = base + D_column
-        rows = self._column_patch[j]
+        rows = np.array(self._column_patch[j], dtype='uint32')
 
         fill_dummy_index = 0
         while fill_dummy_index in rows:
