@@ -71,7 +71,7 @@ for i in range(numSims):
     dlmpc.setParameters(**admm_parameters)
     
     xs[i], us[i] = dlmpc.run()
-    runtimes[i]  = dlmpc.getRunTime()/Tsim
+    runtimes[i]  = dlmpc.getRuntime()/Tsim
     
 # Save data for postprocessing
 outputFile = open(outputFileName, 'wb')
